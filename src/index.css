@@ -1,0 +1,18 @@
+:root {
+  --black: #1d1b1b;
+  --white: #fff;
+  --primary: #F0AFFA;
+  --gray: #CECCC4;
+  --gray-dark: #554F4D;
+  --error: #ff4444;
+}
+
+
+body {
+  background-color: var(--white);
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+}
