@@ -1,48 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useRef } from "react";
+import { CodeEditor } from "./editors/CodeEditor";
+import { TypeEditor } from "./editors/TypeEditor";
+import { AppContainer } from "./styles/styledComponents";
+import debounce from "lodash.debounce"
 
-import { useRef } from 'react';
-import Editor from '@monaco-editor/react';
-import  { type editor  } from 'monaco-editor';
-import { AppContainer, EditorsTabs } from './styles/styledComponents';
-import { setupMonaco } from './monaco/setupMonaco';
-
-type MonacoEditor = editor.IStandaloneCodeEditor
+const DEBOUNCE_TIME = 200
 function App() {
-  const editorRef = useRef<editor.IStandaloneCodeEditor
-  | null>(null)
+  const codeEditorRef = useRef<any>(null);
+  const typeEditorRef = useRef<any>(null);
 
-  function handleEditorDidMount(editor: MonacoEditor) {
-      editorRef.current = editor;
-    }
+  const onTypeEditorChange = useRef(
+    debounce(() => {
+      if (codeEditorRef.current) {
+        codeEditorRef.current.touch();
+      }
+    }, DEBOUNCE_TIME)
+  ).current;
 
-  const defaultValue = `
-import { PartitionKey, SortKey } from "tsynamo";
+  const handleTypeEditorOnChange = () => {
+    onTypeEditorChange()
+  };
 
-export interface DDB {
-   UserEvents: {
-     userId: PartitionKey<string>;
-    eventId: SortKey<number>;
-     eventType: string;
-     userAuthenticated: boolean;
-   };
-}
-  `
   return (
-  <>
-    <AppContainer>
-     
-       <Editor
-        height="100vh"
-        defaultLanguage="typescript"
-        defaultValue={defaultValue}
-        onMount={handleEditorDidMount}
-        beforeMount={setupMonaco}
-        theme='vs-dark'
-        path='file:///index.ts'
-      />
-
-    </AppContainer>
+    <>
+      <AppContainer>
+        <TypeEditor ref={typeEditorRef} onChange={handleTypeEditorOnChange} />
+        <CodeEditor ref={codeEditorRef} />
+      </AppContainer>
     </>
   );
 }
 
-export default App
+export default App;
