@@ -2,12 +2,17 @@
 import Editor from "@monaco-editor/react";
 import { type editor } from "monaco-editor";
 import * as monaco from "monaco-editor";
-import { MutableRefObject, forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  MutableRefObject,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { setupMonaco } from "../monaco/setupMonaco";
 
 type CodeEditorProps = {
-  onChange?: () => void;
-  resultsRef?: MutableRefObject<{ execute: (ts: string) => void}>
+  onChange: () => void;
+  resultsRef?: MutableRefObject<{ execute: (ts: string) => void }>;
 };
 type TouchHandle = {
   touch: () => void;
@@ -45,7 +50,42 @@ await ddb
   .execute();  
 `;
 
-const findHeaderLineNumber = (code: string) => code?.split("\n").findIndex((line) => line.includes(DELIMIT_HEADER)) + 1 ?? 0;
+const findHeaderLineNumber = (code: string) =>
+  code?.split("\n").findIndex((line) => line.includes(DELIMIT_HEADER)) + 1 ?? 0;
+
+const getWholeSelection = (code: string) => {
+  return {
+    startLineNumber: findHeaderLineNumber(code) + 1,
+    endLineNumber: 9999,
+    startColumn: 1,
+    endColumn: 9999,
+  };
+};
+const keyListener = (e: monaco.IKeyboardEvent, editor: MonacoEditor) => {
+  // prevent backspace from going to the hidden header of the code
+  if (e.keyCode === 1) {
+    const selection = editor.getSelection();
+    if (!selection) {
+      return;
+    }
+    if (
+      selection.startLineNumber === selection.endLineNumber &&
+      selection.startColumn === selection.endColumn &&
+      selection.startLineNumber ===
+        findHeaderLineNumber(editor.getValue()) + 1 &&
+      selection.startColumn === 1
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+  // custom ctrl + a
+  if (e.keyCode === 31 && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    e.stopPropagation();
+    editor.setSelection(getWholeSelection(editor.getValue()));
+  }
+};
 
 export const CodeEditor = forwardRef<TouchHandle, CodeEditorProps>(
   ({ onChange, resultsRef }, forwardedRef) => {
@@ -56,33 +96,24 @@ export const CodeEditor = forwardRef<TouchHandle, CodeEditorProps>(
       (editor as any).setHiddenAreas([
         new monaco.Range(0, 0, findHeaderLineNumber(editor.getValue()), 0),
       ]);
+      editor.onKeyDown((e) => keyListener(e, editor));
+
       editorRef.current = editor;
-      resultsRef?.current?.execute(editor.getValue())
+      resultsRef?.current?.execute(editor.getValue());
     }
     useImperativeHandle(
       forwardedRef,
       () => ({
-        
         touch: () => {
           // have to reset hiddenAreas
           (editorRef.current as any).setHiddenAreas([
-            new monaco.Range(
-              0,
-              0,
-              0,
-              0
-            ),
+            new monaco.Range(0, 0, 0, 0),
           ]);
           const code = editorRef?.current?.getValue() ?? "";
           editorRef?.current?.setValue(code);
 
           (editorRef.current as any).setHiddenAreas([
-            new monaco.Range(
-              0,
-              0,
-              findHeaderLineNumber(code),
-              0
-            ),
+            new monaco.Range(0, 0, findHeaderLineNumber(code), 0),
           ]);
         },
         getValue: () => {
