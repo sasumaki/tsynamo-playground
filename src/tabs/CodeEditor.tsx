@@ -51,7 +51,7 @@ await ddb
 `;
 
 const findHeaderLineNumber = (code: string) =>
-  code?.split("\n").findIndex((line) => line.includes(DELIMIT_HEADER)) + 1 ?? 0;
+  code?.split("\n").findIndex((line) => line.includes(DELIMIT_HEADER)) + 1;
 
 const getWholeSelection = (code: string) => {
   return {
