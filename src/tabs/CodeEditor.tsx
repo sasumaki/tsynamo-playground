@@ -47,7 +47,7 @@ await ddb
     eventId: 222,
   })
   .attributes(["userId"])
-  .execute();  
+  .execute();
 `;
 
 const findHeaderLineNumber = (code: string) =>
