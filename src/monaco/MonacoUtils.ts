@@ -46,7 +46,7 @@ export class MonacoUtils {
       noImplicitAny: true,
     });
   }
-  async addLib(filePath: string, value: string) {
+  async addLib(filePath: string | undefined, value: string) {
     this.monaco.languages.typescript.typescriptDefaults.addExtraLib(
       value,
       filePath

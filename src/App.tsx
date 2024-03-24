@@ -38,7 +38,7 @@ function App() {
     <>
       <AppContainer>
         <TypeEditor onChange={handleTypeEditorOnChange} />
-        <CodeEditor ref={codeEditorRef} onChange={handleCodeEditorChange}/>
+        <CodeEditor ref={codeEditorRef} onChange={handleCodeEditorChange} resultsRef={resultsRef}/>
         <Results ref={resultsRef} />
       </AppContainer>
     </>

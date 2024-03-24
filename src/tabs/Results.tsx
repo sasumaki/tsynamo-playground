@@ -1,11 +1,9 @@
-import {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import styled from "styled-components";
 import { transpile, ScriptTarget, ModuleKind } from "typescript";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { vs2015 as style } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 // some hacks to execute the querybuilder copied from https://github.com/wirekang/kysely-playground/blob/main/src/lib/executer/executer.ts
 function makeModule(js: string) {
@@ -60,23 +58,30 @@ function replaceImports(js: string): string {
   return js;
 }
 
-type CodeEditorProps = {
+type ResultsProps = {
   onChange?: () => void;
 };
 type TouchHandle = {
   execute: (value: string) => void;
 };
-const defaultValue = `{ "TableName": "UserEvents", "Key": { "userId": "1234", "eventId": 222 }, "ProjectionExpression": "#userId", "ExpressionAttributeNames": { "#userId": "userId" } }`
 
-export const Results = forwardRef<TouchHandle, CodeEditorProps>(
+const defaultValue = "Loading...";
+
+export const Results = forwardRef<TouchHandle, ResultsProps>(
   (_, forwardedRef) => {
     const resultsRef = useRef(null);
-    const [compiled, setCompiled] = useState<string | null>(defaultValue);
+    const compiledRef = useRef<string[]>([defaultValue]);
+    const [, setState] = useState([defaultValue]);
 
     const execute = async (ts: string) => {
+      compiledRef.current = [];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cb: EventListener = (event: any) => {
-        setCompiled(JSON.stringify(event.detail.input, undefined, 2));
+        compiledRef.current = [
+          ...compiledRef.current,
+          JSON.stringify(event.detail.clientCommand, undefined, 2),
+        ];
+        setState(() => compiledRef.current);
       };
       window.addEventListener("playground", cb);
       const transpiled = transpile(ts, {
@@ -97,18 +102,16 @@ export const Results = forwardRef<TouchHandle, CodeEditorProps>(
       }
     };
 
-    useImperativeHandle(
-      forwardedRef,
-      () => ({
-        mounted: () => resultsRef.current,
-        execute: execute,
-      }),
-      []
-    );
-    
+    useImperativeHandle(forwardedRef, () => ({
+      mounted: () => resultsRef.current,
+      execute: execute,
+    }));
+
     return (
-      <ResultsContainer>
-        <p ref={resultsRef}>{compiled}</p>
+      <ResultsContainer ref={resultsRef}>
+        <SyntaxHighlighter language={"json"} style={style}>
+          {compiledRef.current.join("\n\n")}
+        </SyntaxHighlighter>
       </ResultsContainer>
     );
   }
@@ -126,8 +129,8 @@ const ResultsContainer = styled.div`
   font-variation-settings: normal;
   line-height: 18px;
   letter-spacing: 0px;
-  width: 559px;
-  height: 1220px;
+  width: 33%;
+  height: 100vh;
   background-color: #1e1e1e;
   padding: 0px 26px;
 `;

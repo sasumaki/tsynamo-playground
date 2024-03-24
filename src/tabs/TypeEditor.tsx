@@ -39,6 +39,7 @@ export interface DDB {
   return (
     <Editor
         height="100vh"
+        width={"33%"}
         defaultLanguage="typescript"
         defaultValue={defaultTypesValue}
         onMount={handleEditorDidMount}
