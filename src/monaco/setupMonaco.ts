@@ -16,14 +16,15 @@ export const setupMonaco = async (monaco: any) => {
     monaco
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const dependencies: any = {
-  //   "type-editor": "*",
-  // };
-  // await MonacoUtils.addLib(
-  //   "file:///package.json",
-  //   JSON.stringify({
-  //     dependencies,
-  //   })
-  // );
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dependencies: any = {
+    "type-editor": "*",
+  };
+  await MonacoUtils.addLib(
+    "file:///package.json",
+    JSON.stringify({
+      dependencies,
+    }),
+    monaco
+  );
 };

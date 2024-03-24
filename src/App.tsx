@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef } from "react";
-import { CodeEditor } from "./editors/CodeEditor";
-import { TypeEditor } from "./editors/TypeEditor";
+import { CodeEditor } from "./tabs/CodeEditor";
+import { TypeEditor } from "./tabs/TypeEditor";
 import { AppContainer } from "./styles/styledComponents";
 import debounce from "lodash.debounce"
+import { Results } from "./tabs/Results";
 
 const DEBOUNCE_TIME = 200
 function App() {
   const codeEditorRef = useRef<any>(null);
-  const typeEditorRef = useRef<any>(null);
+  const resultsRef = useRef<any>(null);
 
   const onTypeEditorChange = useRef(
     debounce(() => {
@@ -21,12 +22,24 @@ function App() {
   const handleTypeEditorOnChange = () => {
     onTypeEditorChange()
   };
+  const onCodeEditorChange = useRef(
+    debounce(() => {
+      if (resultsRef.current) {
+        resultsRef.current.execute(codeEditorRef.current?.getValue());
+      }
+    }, DEBOUNCE_TIME)
+  ).current;
+
+  const handleCodeEditorChange = () => {
+    onCodeEditorChange()
+  };
 
   return (
     <>
       <AppContainer>
-        <TypeEditor ref={typeEditorRef} onChange={handleTypeEditorOnChange} />
-        <CodeEditor ref={codeEditorRef} />
+        <TypeEditor onChange={handleTypeEditorOnChange} />
+        <CodeEditor ref={codeEditorRef} onChange={handleCodeEditorChange}/>
+        <Results ref={resultsRef} />
       </AppContainer>
     </>
   );

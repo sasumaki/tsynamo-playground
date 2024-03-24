@@ -7,6 +7,7 @@ export const AppContainer = styled.div`
   margin: 0;
   display: flex;
   flex-direction: row;
+  flex: 1;
 `;
 
 export const EditorsTabs = styled.div`

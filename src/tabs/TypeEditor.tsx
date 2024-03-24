@@ -46,6 +46,25 @@ export interface DDB {
         theme='vs-dark'
         path='file:///type-editor/index.ts'
         onChange={onChange}
+        options={{
+          automaticLayout: true,
+          lineNumbers: "off",
+          minimap: { enabled: false },
+          glyphMargin: false,
+          folding: false,
+          lineDecorationsWidth: 0,
+          lineNumbersMinChars: 0,
+          showFoldingControls: "never",
+          overviewRulerLanes: 0,
+          theme:"vs-dark",
+          padding: { top: 2 },
+          contextmenu: false,
+          scrollbar: {
+            verticalScrollbarSize: 4,
+            verticalSliderSize: 4,
+            useShadows: false,
+          },       
+      }}
       />
   );
 })
