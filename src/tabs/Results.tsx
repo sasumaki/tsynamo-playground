@@ -1,6 +1,5 @@
 import {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -34,7 +33,7 @@ function replaceImports(js: string): string {
         throw Error(`quote mismatch: ${quote} !== ${p2[p2.length - 1]}`);
       }
       p2 = p2.substring(1, p2.length - 1);
-      console.log({ p1, p2, quote });
+
       if (importMapping[p2]) {
         return `${p1} ${quote}${importMapping[p2]}${quote};`;
       }
@@ -77,7 +76,6 @@ export const Results = forwardRef<TouchHandle, CodeEditorProps>(
     const execute = async (ts: string) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cb: EventListener = (event: any) => {
-        console.log("event catched", { event });
         setCompiled(JSON.stringify(event.detail.input, undefined, 2));
       };
       window.addEventListener("playground", cb);
