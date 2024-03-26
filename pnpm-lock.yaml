@@ -14,6 +14,9 @@ dependencies:
   lodash.debounce:
     specifier: ^4.0.8
     version: 4.0.8
+  lz-string:
+    specifier: ^1.5.0
+    version: 1.5.0
   monaco-editor:
     specifier: ^0.47.0
     version: 0.47.0
@@ -2320,6 +2323,11 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
+    dev: false
 
   /merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}

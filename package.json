@@ -13,6 +13,7 @@
     "@aws-sdk/lib-dynamodb": "^3.538.0",
     "@monaco-editor/react": "^4.6.0",
     "lodash.debounce": "^4.0.8",
+    "lz-string": "^1.5.0",
     "monaco-editor": "^0.47.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

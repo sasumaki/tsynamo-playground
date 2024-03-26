@@ -5,13 +5,14 @@ import { setupMonaco } from "../monaco/setupMonaco";
 
 type TypeEditorProps = {
   onChange: () => void
+  valueFromUrl: string | null
 }
 type TouchHandle = {
   touch: () => void,
 }
 
 type MonacoEditor = editor.IStandaloneCodeEditor;
-export const TypeEditor = forwardRef<TouchHandle, TypeEditorProps>(({ onChange }, forwardedRef) => {
+export const TypeEditor = forwardRef<TouchHandle, TypeEditorProps>(({ onChange, valueFromUrl }, forwardedRef) => {
   const editorRef = useRef<MonacoEditor | null>(null);
 
   function handleEditorDidMount(editor: MonacoEditor) {
@@ -20,6 +21,12 @@ export const TypeEditor = forwardRef<TouchHandle, TypeEditorProps>(({ onChange }
   useImperativeHandle(forwardedRef, () => ({
     touch: () => {
       editorRef?.current?.setValue(editorRef?.current?.getValue());
+    },
+    getValue: () => {
+      return editorRef?.current?.getValue()
+    },
+    setValue: (val: string) => {
+      editorRef?.current?.setValue(val)
     }
   }), [])
 
@@ -41,7 +48,7 @@ export interface DDB {
         height="100vh"
         width={"33%"}
         defaultLanguage="typescript"
-        defaultValue={defaultTypesValue}
+        defaultValue={valueFromUrl ?? defaultTypesValue}
         onMount={handleEditorDidMount}
         beforeMount={setupMonaco}
         theme='vs-dark'

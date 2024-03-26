@@ -1,15 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef } from "react";
-import { CodeEditor } from "./tabs/CodeEditor";
-import { TypeEditor } from "./tabs/TypeEditor";
+import debounce from "lodash.debounce";
+import {
+  compressToEncodedURIComponent,
+  decompressFromEncodedURIComponent,
+} from "lz-string";
+import { useEffect, useRef } from "react";
 import { AppContainer } from "./styles/styledComponents";
-import debounce from "lodash.debounce"
+import { CodeEditor } from "./tabs/CodeEditor";
 import { Results } from "./tabs/Results";
+import { TypeEditor } from "./tabs/TypeEditor";
 
-const DEBOUNCE_TIME = 200
+const DEBOUNCE_TIME = 200;
+
 function App() {
+  const typeEditorRef = useRef<any>(null);
   const codeEditorRef = useRef<any>(null);
   const resultsRef = useRef<any>(null);
+
 
   const onTypeEditorChange = useRef(
     debounce(() => {
@@ -20,7 +27,7 @@ function App() {
   ).current;
 
   const handleTypeEditorOnChange = () => {
-    onTypeEditorChange()
+    onTypeEditorChange();
   };
   const onCodeEditorChange = useRef(
     debounce(() => {
@@ -31,14 +38,70 @@ function App() {
   ).current;
 
   const handleCodeEditorChange = () => {
-    onCodeEditorChange()
+    onCodeEditorChange();
   };
 
+  const handleSave = async (event: KeyboardEvent) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === "s") {
+      event.preventDefault();
+
+      const appState = {
+        editors: {
+          type: typeEditorRef.current.getValue(),
+          code: codeEditorRef.current.getValue(),
+        },
+      };
+      const encodedState = compressToEncodedURIComponent(
+        JSON.stringify(appState)
+      );
+
+      window.history.replaceState(
+        null,
+        "",
+        window.location.origin +
+          window.location.pathname +
+          window.location.search
+      );
+      window.location.hash = encodedState;
+      await navigator.clipboard.writeText(window.location.href);
+      event.stopPropagation();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleSave);
+    return () => {
+      window.removeEventListener("keydown", handleSave);
+    };
+  }, []);
+
+  const currentLocationHash = window.location.hash;
+  if (!currentLocationHash) return;
+  const stateFromUrlJson = decompressFromEncodedURIComponent(
+    currentLocationHash?.slice(1)
+  );
+  let stateFromUrl = {
+    editors: {
+      code: null,
+      type: null
+    }
+  }
+  try {
+    stateFromUrl = JSON.parse(stateFromUrlJson);
+  } catch (e) {
+    console.error("Invalid state in url. Doing nothing.", e);
+  }
+  console.log(stateFromUrl)
   return (
     <>
       <AppContainer>
-        <TypeEditor onChange={handleTypeEditorOnChange} />
-        <CodeEditor ref={codeEditorRef} onChange={handleCodeEditorChange} resultsRef={resultsRef}/>
+        <TypeEditor ref={typeEditorRef} onChange={handleTypeEditorOnChange} valueFromUrl={stateFromUrl.editors.type}/>
+        <CodeEditor
+          ref={codeEditorRef}
+          onChange={handleCodeEditorChange}
+          resultsRef={resultsRef}
+          valueFromUrl={stateFromUrl.editors.code}
+        />
         <Results ref={resultsRef} />
       </AppContainer>
     </>

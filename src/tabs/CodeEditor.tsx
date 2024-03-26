@@ -13,6 +13,8 @@ import { setupMonaco } from "../monaco/setupMonaco";
 type CodeEditorProps = {
   onChange: () => void;
   resultsRef?: MutableRefObject<{ execute: (ts: string) => void }>;
+  valueFromUrl: string | null
+
 };
 type TouchHandle = {
   touch: () => void;
@@ -88,7 +90,7 @@ const keyListener = (e: monaco.IKeyboardEvent, editor: MonacoEditor) => {
 };
 
 export const CodeEditor = forwardRef<TouchHandle, CodeEditorProps>(
-  ({ onChange, resultsRef }, forwardedRef) => {
+  ({ onChange, resultsRef, valueFromUrl }, forwardedRef) => {
     const editorRef = useRef<MonacoEditor | null>(null);
 
     function handleEditorDidMount(editor: MonacoEditor) {
@@ -119,7 +121,9 @@ export const CodeEditor = forwardRef<TouchHandle, CodeEditorProps>(
         getValue: () => {
           return editorRef.current?.getValue();
         },
-        mounted: () => editorRef.current,
+        setValue: (val: string) => {
+          editorRef?.current?.setValue(val)
+        }
       }),
       []
     );
@@ -129,7 +133,7 @@ export const CodeEditor = forwardRef<TouchHandle, CodeEditorProps>(
         height="100vh"
         width={"33%"}
         defaultLanguage="typescript"
-        defaultValue={defaultCodeValue}
+        defaultValue={valueFromUrl ?? defaultCodeValue}
         onMount={handleEditorDidMount}
         beforeMount={setupMonaco}
         theme="vs-dark"
