@@ -109,16 +109,26 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
 
     return (
       <ResultsContainer ref={resultsRef}>
-        <SyntaxHighlighter language={"json"} style={style}>
+        <StyledSyntaxHighlighter language={"json"} style={style} wrapLines wrapLongLines >
           {compiledRef.current.join("\n\n")}
-        </SyntaxHighlighter>
+        </StyledSyntaxHighlighter>
       </ResultsContainer>
     );
   }
 );
 
+const StyledSyntaxHighlighter = styled(SyntaxHighlighter)`
+&::-webkit-scrollbar {
+  display: none;
+};
+
+/* Hide scrollbar for IE and Edge */
+-ms-overflow-style: none; /* IE and Edge */
+
+/* Hide scrollbar for Firefox */
+scrollbar-width: none; /* Firefox */
+`
 const ResultsContainer = styled.div`
-  height: 100vh;
   flex-grow: 1;
   width: 100%;
   color: white;
@@ -130,7 +140,9 @@ const ResultsContainer = styled.div`
   line-height: 18px;
   letter-spacing: 0px;
   width: 33%;
+  max-width: 33%;
   height: 100vh;
   background-color: #1e1e1e;
   padding: 0px 26px;
+
 `;
