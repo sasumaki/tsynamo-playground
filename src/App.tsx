@@ -17,7 +17,6 @@ function App() {
   const codeEditorRef = useRef<any>(null);
   const resultsRef = useRef<any>(null);
 
-
   const onTypeEditorChange = useRef(
     debounce(() => {
       if (codeEditorRef.current) {
@@ -63,6 +62,7 @@ function App() {
           window.location.search
       );
       window.location.hash = encodedState;
+
       await navigator.clipboard.writeText(window.location.href);
       event.stopPropagation();
     }
@@ -75,32 +75,34 @@ function App() {
     };
   }, []);
 
-  const currentLocationHash = window.location.hash;
-  if (!currentLocationHash) return;
-  const stateFromUrlJson = decompressFromEncodedURIComponent(
-    currentLocationHash?.slice(1)
-  );
   let stateFromUrl = {
     editors: {
       code: null,
-      type: null
-    }
-  }
+      type: null,
+    },
+  };
   try {
+    const currentLocationHash = window.location.hash;
+    const stateFromUrlJson = decompressFromEncodedURIComponent(
+      currentLocationHash?.slice(1)
+    );
     stateFromUrl = JSON.parse(stateFromUrlJson);
   } catch (e) {
     console.error("Invalid state in url. Doing nothing.", e);
   }
-  console.log(stateFromUrl)
   return (
     <>
       <AppContainer>
-        <TypeEditor ref={typeEditorRef} onChange={handleTypeEditorOnChange} valueFromUrl={stateFromUrl.editors.type}/>
+        <TypeEditor
+          ref={typeEditorRef}
+          onChange={handleTypeEditorOnChange}
+          valueFromUrl={stateFromUrl?.editors?.type}
+        />
         <CodeEditor
           ref={codeEditorRef}
           onChange={handleCodeEditorChange}
           resultsRef={resultsRef}
-          valueFromUrl={stateFromUrl.editors.code}
+          valueFromUrl={stateFromUrl?.editors?.code}
         />
         <Results ref={resultsRef} />
       </AppContainer>
