@@ -48,16 +48,12 @@ const ddb = new Tsynamo<_DDB>({
 ${DELIMIT_HEADER}
 import { DDB } from "./type-editor";
 
-const eventType: DDB["UserEvents"]["eventType"] = "login"
+const eventType: DDB["UserEvents"]["eventType"] = "LOG_IN"
 
 await ddb
-  .putItem("UserEvents")
-  .item({
-    userId: "123",
-    eventId: 1,
-    eventType,
-  })
-  .conditionExpression("userAuthenticated", "=", false)
+  .query("UserEvents")
+  .keyCondition("userId", "=", "123")
+  .filterExpression("eventType", "=", eventType)
   .execute();
 `;
 

@@ -34,12 +34,12 @@ export const TypeEditor = forwardRef<TouchHandle, TypeEditorProps>(({ onChange, 
 import { PartitionKey, SortKey } from "tsynamo";
 
 export interface DDB {
-   UserEvents: {
-     userId: PartitionKey<string>;
-     eventId: SortKey<number>;
-     eventType: string;
-     userAuthenticated: boolean;
-   };
+  UserEvents: {
+    userId: PartitionKey<string>;
+    eventId: SortKey<number>;
+    eventType: "LOG_IN" | "SIGN_IN";
+    userAuthenticated: boolean;
+  };
 }
 `
 
