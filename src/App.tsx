@@ -5,11 +5,14 @@ import {
   decompressFromEncodedURIComponent,
 } from "lz-string";
 import { useEffect, useRef } from "react";
+import styled from "styled-components";
+import { Header } from "./components/Header";
+import MySnackbar from "./components/Snackbar";
 import { CodeEditor } from "./tabs/CodeEditor";
 import { Results } from "./tabs/Results";
 import { TypeEditor } from "./tabs/TypeEditor";
-import styled from "styled-components";
-import { Header } from "./Header";
+import { useSnackbar } from "./util/hooks";
+
 
 const DEBOUNCE_TIME = 200;
 
@@ -17,6 +20,7 @@ function App() {
   const typeEditorRef = useRef<any>(null);
   const codeEditorRef = useRef<any>(null);
   const resultsRef = useRef<any>(null);
+  const { notify, snackbarMessage } = useSnackbar()
 
   const onTypeEditorChange = useRef(
     debounce(() => {
@@ -65,6 +69,7 @@ function App() {
       window.location.hash = encodedState;
 
       await navigator.clipboard.writeText(window.location.href);
+      notify("URL copied to clipboard")
       event.stopPropagation();
     }
   };
@@ -109,6 +114,7 @@ function App() {
           />
           <Results ref={resultsRef} />
         </Editors>
+        <MySnackbar message={snackbarMessage} />
       </AppContainer>
     </>
   );
