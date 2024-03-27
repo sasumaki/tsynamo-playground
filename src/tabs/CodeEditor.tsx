@@ -35,6 +35,12 @@ class PlaygroundDocumentClient {
 import { Tsynamo } from "tsynamo"
 import { DDB as _DDB } from "./type-editor";
 
+/**
+ * 
+ * A \`Tsynamo\` instance with \`DDB\` type from \`type-editor\`.
+ */
+declare const ddb: import("tsynamo").Tsynamo<_DDB>;
+
 const ddb = new Tsynamo<_DDB>({
   ddbClient: new PlaygroundDocumentClient()
 })
@@ -42,13 +48,16 @@ const ddb = new Tsynamo<_DDB>({
 ${DELIMIT_HEADER}
 import { DDB } from "./type-editor";
 
+const eventType: DDB["UserEvents"]["eventType"] = "login"
+
 await ddb
-  .getItem("UserEvents")
-  .keys({
+  .putItem("UserEvents")
+  .item({
     userId: "123",
-    eventId: 222,
+    eventId: 1,
+    eventType,
   })
-  .attributes(["userId"])
+  .conditionExpression("userAuthenticated", "=", false)
   .execute();
 `;
 
