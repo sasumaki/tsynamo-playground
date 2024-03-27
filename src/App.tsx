@@ -5,10 +5,11 @@ import {
   decompressFromEncodedURIComponent,
 } from "lz-string";
 import { useEffect, useRef } from "react";
-import { AppContainer } from "./styles/styledComponents";
 import { CodeEditor } from "./tabs/CodeEditor";
 import { Results } from "./tabs/Results";
 import { TypeEditor } from "./tabs/TypeEditor";
+import styled from "styled-components";
+import { Header } from "./Header";
 
 const DEBOUNCE_TIME = 200;
 
@@ -93,21 +94,48 @@ function App() {
   return (
     <>
       <AppContainer>
-        <TypeEditor
-          ref={typeEditorRef}
-          onChange={handleTypeEditorOnChange}
-          valueFromUrl={stateFromUrl?.editors?.type}
-        />
-        <CodeEditor
-          ref={codeEditorRef}
-          onChange={handleCodeEditorChange}
-          resultsRef={resultsRef}
-          valueFromUrl={stateFromUrl?.editors?.code}
-        />
-        <Results ref={resultsRef} />
+        <Header />
+        <Editors>
+          <TypeEditor
+            ref={typeEditorRef}
+            onChange={handleTypeEditorOnChange}
+            valueFromUrl={stateFromUrl?.editors?.type}
+          />
+          <CodeEditor
+            ref={codeEditorRef}
+            onChange={handleCodeEditorChange}
+            resultsRef={resultsRef}
+            valueFromUrl={stateFromUrl?.editors?.code}
+          />
+          <Results ref={resultsRef} />
+        </Editors>
       </AppContainer>
     </>
   );
 }
 
 export default App;
+
+const AppContainer = styled.div`
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+`;
+
+const Editors = styled.div`
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+overflow: hidden;
+`;
