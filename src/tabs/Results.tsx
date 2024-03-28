@@ -72,8 +72,11 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
     const resultsRef = useRef(null);
     const compiledRef = useRef<string[]>([defaultValue]);
     const [, setState] = useState([defaultValue]);
+    
     const execute = async (ts: string) => {
       compiledRef.current = [];
+      setState(() => compiledRef.current);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cb: EventListener = (event: any) => {
         compiledRef.current = [
@@ -82,6 +85,7 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
         ];
         setState(() => compiledRef.current);
       };
+
       window.addEventListener("playground", cb);
       try {
         const transpiled = transpile(ts, {
@@ -95,6 +99,7 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
         await import(/* @vite-ignore */ module);
       } catch (e) {
         compiledRef.current = [defaultValue]
+        console.error(e)
       } finally {
         window.removeEventListener("playground", cb);
       }
