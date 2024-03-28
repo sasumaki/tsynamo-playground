@@ -65,7 +65,7 @@ type TouchHandle = {
   execute: (value: string) => void;
 };
 
-const defaultValue = "Loading...";
+const defaultValue = "Call tsynamo.execute()";
 
 export const Results = forwardRef<TouchHandle, ResultsProps>(
   (_, forwardedRef) => {
@@ -94,7 +94,7 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
         const module = makeModule(transpiled);
         await import(/* @vite-ignore */ module);
       } catch (e) {
-        compiledRef.current = ["Call tsynamo.execute()"]
+        compiledRef.current = [defaultValue]
       } finally {
         window.removeEventListener("playground", cb);
       }
@@ -108,7 +108,7 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
     return (
       <ResultsContainer ref={resultsRef}>
         <StyledSyntaxHighlighter language={"json"} style={style} wrapLines wrapLongLines >
-          {compiledRef.current.length < 1 ? "Call tsynamo.execute()" : compiledRef.current.join("\n\n")}
+          {compiledRef.current.length === 0 ? defaultValue : compiledRef.current.join("\n\n")}
         </StyledSyntaxHighlighter>
       </ResultsContainer>
     );

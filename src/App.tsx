@@ -45,31 +45,33 @@ function App() {
     onCodeEditorChange();
   };
 
+  const save = () => {
+    const appState = {
+      editors: {
+        type: typeEditorRef.current.getValue(),
+        code: codeEditorRef.current.getValue(),
+      },
+    };
+    const encodedState = compressToEncodedURIComponent(
+      JSON.stringify(appState)
+    );
+
+    window.history.replaceState(
+      null,
+      "",
+      window.location.origin +
+        window.location.pathname +
+        window.location.search
+    );
+    window.location.hash = encodedState;
+
+    navigator.clipboard.writeText(window.location.href);
+    notify("URL copied to clipboard")
+  }
   const handleSave = async (event: KeyboardEvent) => {
     if ((event.metaKey || event.ctrlKey) && event.key === "s") {
       event.preventDefault();
-
-      const appState = {
-        editors: {
-          type: typeEditorRef.current.getValue(),
-          code: codeEditorRef.current.getValue(),
-        },
-      };
-      const encodedState = compressToEncodedURIComponent(
-        JSON.stringify(appState)
-      );
-
-      window.history.replaceState(
-        null,
-        "",
-        window.location.origin +
-          window.location.pathname +
-          window.location.search
-      );
-      window.location.hash = encodedState;
-
-      await navigator.clipboard.writeText(window.location.href);
-      notify("URL copied to clipboard")
+      save()
       event.stopPropagation();
     }
   };
@@ -79,6 +81,7 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleSave);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   let stateFromUrl = {
@@ -99,7 +102,7 @@ function App() {
   return (
     <>
       <AppContainer>
-        <Header />
+        <Header handleSave={save}/>
         <Editors>
           <TypeEditor
             ref={typeEditorRef}
