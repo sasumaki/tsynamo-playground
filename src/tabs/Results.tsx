@@ -72,7 +72,6 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
     const resultsRef = useRef(null);
     const compiledRef = useRef<string[]>([defaultValue]);
     const [, setState] = useState([defaultValue]);
-
     const execute = async (ts: string) => {
       compiledRef.current = [];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,19 +83,18 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
         setState(() => compiledRef.current);
       };
       window.addEventListener("playground", cb);
-      const transpiled = transpile(ts, {
-        strict: false,
-        skipLibCheck: true,
-        noImplicitAny: false,
-        target: ScriptTarget.ES2020,
-        module: ModuleKind.ES2020,
-      });
-      const module = makeModule(transpiled);
-
       try {
+        const transpiled = transpile(ts, {
+          strict: false,
+          skipLibCheck: true,
+          noImplicitAny: false,
+          target: ScriptTarget.ES2020,
+          module: ModuleKind.ES2020,
+        });
+        const module = makeModule(transpiled);
         await import(/* @vite-ignore */ module);
       } catch (e) {
-        console.error(e);
+        compiledRef.current = ["Call tsynamo.execute()"]
       } finally {
         window.removeEventListener("playground", cb);
       }
@@ -110,7 +108,7 @@ export const Results = forwardRef<TouchHandle, ResultsProps>(
     return (
       <ResultsContainer ref={resultsRef}>
         <StyledSyntaxHighlighter language={"json"} style={style} wrapLines wrapLongLines >
-          {compiledRef.current.join("\n\n")}
+          {compiledRef.current.length < 1 ? "Call tsynamo.execute()" : compiledRef.current.join("\n\n")}
         </StyledSyntaxHighlighter>
       </ResultsContainer>
     );
